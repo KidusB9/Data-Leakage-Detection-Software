@@ -1,0 +1,41 @@
+import java.io.File;
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
+
+public class DataLeakageDetector {
+    // Set of sensitive words that should not be leaked
+    private static final Set<String> SENSITIVE_WORDS = new HashSet<>(
+        List.of("password", "credit card", "bank account")
+    );
+
+    public static void main(String[] args) {
+        // Prompt the user for the file to scan
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the path of the file to scan:");
+        String filePath = scanner.nextLine();
+        File file = new File(filePath);
+
+        // Check if the file exists
+        if (!file.exists()) {
+            System.out.println("Error: File not found.");
+            return;
+        }
+
+        // Scan the file line by line and check for sensitive words
+        try (Scanner fileScanner = new Scanner(file)) {
+            int lineNumber = 0;
+            while (fileScanner.hasNextLine()) {
+                lineNumber++;
+                String line = fileScanner.nextLine();
+                for (String word : SENSITIVE_WORDS) {
+                    if (line.contains(word)) {
+                        System.out.println("Sensitive word found on line " + lineNumber + ": " + word);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}
